@@ -42,7 +42,7 @@ public class Main extends PApplet
 			int populationSize = 30;
 			int numNearestNeighbors = 1; 
 			int numberOfIterations = 20;
-			int tournamentSize = 3;
+			int tournamentSize = 1;
 			double initialSparsenessThreshold = 0.05;
 			Random rand = new Random(42);
 			generator = new TimeGenerator(this,rand);
@@ -55,6 +55,8 @@ public class Main extends PApplet
 				//Here goes the code for what should change between experiments
 				//TODO
 				numNearestNeighbors += 2;
+				System.out.println("Experiment "+(n + 1)+" Done");
+
 			}
 			isGenerationOver = true;
 		}
@@ -146,16 +148,18 @@ public class Main extends PApplet
 		deleteFolder(folder);
 		for (Individual sol : population) 
 		{
-			Gene[] vars = sol.getVariables();
-			String name = vars[0] + "-" + vars[1];
-			gen.genotypeToPhenotype(vars).save(folder.getAbsolutePath() + "/"+ name + ".png");
+			Gene[] genes = sol.getGenes();
+			String name = genes[0] + "-" + genes[1];
+			gen.genotypeToPhenotype(genes).save(folder.getAbsolutePath() + "/"+ name + ".png");
 		}
+		/*
 		//TODO Infinity?
 		for (Individual sol : population) 
 		{
 			System.out.print(sol.getNovelty() + " ");
 		}
 		System.out.println();
+		*/
 	}
 	
 	/**

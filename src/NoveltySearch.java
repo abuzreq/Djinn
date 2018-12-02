@@ -33,6 +33,7 @@ public class NoveltySearch
 		this.numNearestNeighbors = numNearestNeighbors;
 		this.sparsenessThreshold = initialSparsenessThreshold;
 		this.tournamentSize = tournamentSize;
+		this.numberOfIterations = numberOfIterations;
 	}
 	Comparator<Individual> noveltyCompratator = new Comparator<Individual>() {
 
@@ -49,9 +50,21 @@ public class NoveltySearch
 		}
 	}
 	private void iterate() {
-
-		sparsenessThreshold += 1;
-
+		//		
+		/* TODO For Future: Adaptive change on novelty threshold
+			An adaptive threshold ρmin is used to determine which
+			behaviors to include in the archive. If the novelty of a new
+			individual is higher than the threshold (ρ(x) > ρmin), it
+			is added to the archive. To keep the size of the archive approximately
+			constant, ρmin is increased by a fixed fraction if
+			the number of added behaviors exceeds the addmax threshold
+			in a certain number of evaluations. If the number of
+			added behaviors is lower than addmin in a certain number
+			of evaluations, ρmin is decreased by a fixed fraction
+			Source: Critical Factors in the Performance of Novelty Search, 
+			by Steijn Kistemaker and Shimon Whiteson
+		 */
+		
 		 Population populationAndArchive = (Population) population.clone();
 		 populationAndArchive.addAll(archive);
 
@@ -59,36 +72,20 @@ public class NoveltySearch
 		for (Individual solution : population) {
 			solution.setNovelty(Double.POSITIVE_INFINITY);
 			computeNovelty(solution, populationAndArchive, numNearestNeighbors);
-			if (numNearestNeighbors == 1) { // currently only set up to handle numNearestNeighbors == 1
-				computeNoveltyCheck(solution, populationAndArchive, numNearestNeighbors);
-			}
-			//System.out.println(solution.getNovelty());
-			
 			//Scheme 1, add to archive if > threshold, threshold changes dynamicly
-			
 			if (solution.getNovelty() >= sparsenessThreshold) {
 				archive.add(solution);
 			}
 			
 		}
-		//Scheme 2, add the n best of each population to the archive
-		/*
-		population.sort(noveltyCompratator);
-		archive.addAll(population.subList(0, population.size()/4));
-		*/
-		// add sufficiently novel solutions to archive
-		// for (Solution solution : population) {
-		// if (solution.getNovelty() >= SPARSENESS_THRESHOLD) {
-		// archive.add(solution);
-		// }
-		// }
 
 		// select parents
 		Population children = new Population(gen,0);
 		while (children.size() < population.size()) {
 			Individual parent = tournamentSelect(population, tournamentSize);
 			Individual child = parent.clone();
-			child.mutate(.25,gen); // TODO: Fix mutation rate
+
+			child.mutate(.25,0.1,gen); // TODO: Fix mutation rate
 			children.add(child);
 		}
 
@@ -124,8 +121,9 @@ public class NoveltySearch
 
 		int nonSelfCount = 0;
 
-		for (Individual otherSolution : comparisonGroup) {
-			if (solution != otherSolution) {
+		for (Individual otherSolution : comparisonGroup)
+		{
+			if (!solution.equals(otherSolution)) {
 
 				nonSelfCount++;
 
@@ -155,7 +153,6 @@ public class NoveltySearch
 
 	public Individual tournamentSelect(Population population, int tournamentSize) 
 	{
-		//TODO I am doubtful this reflects how tournament selection should be done
 		Individual bestCandidate = population.get(gen.rand.nextInt(population.size()));
 		double mostNovel = bestCandidate.getNovelty();
 		for (int i = 0; i < tournamentSize - 1; i++) {
