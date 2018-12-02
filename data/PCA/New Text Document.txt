@@ -1,0 +1,5 @@
+		int populationSize = 20;
+		int k = 3; // TODO Currently only k=1 supported
+		int numberOfIterations = 30;
+		int tournamentSize = 3;
+		NoveltySearch.sparsenessThreshold = 50;
