@@ -36,15 +36,6 @@ public class Individual implements Comparable<Individual> {
 			diff += Math.pow(this.behavior[r] - other.behavior[r], 2);
 		}
 		return diff;
-
-		/*
-		 * if (behavior.length != other.behavior.length) { throw new
-		 * IllegalArgumentException("Different dimensions."); } double dist2 =
-		 * 0.0; for (int i = 0; i < behavior.length; i++) { dist2 +=
-		 * Math.pow(behavior[i] - other.behavior[i], 2); //dist2 +=
-		 * pixelDiff((int)(behavior[i]) , (int)(other.behavior[i])); } return
-		 * dist2;
-		 */
 	}
 
 	public int getNumberOfGenes() {
@@ -118,8 +109,11 @@ public class Individual implements Comparable<Individual> {
     }
 	
 	@Override
-	public String toString() {
+	public String toString() 
+	{
+		return ""+novelty;
+		/*
 		return "Solution{Variables: " + Arrays.toString(genes) + "\nBehavior: " + Arrays.toString(behavior)
-				+ "\nNovelty: " + novelty + "}";
+				+ "\nNovelty: " + novelty + "}";*/
 	}
 }

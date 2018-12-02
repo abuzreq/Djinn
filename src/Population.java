@@ -36,15 +36,7 @@ public class Population extends ArrayList<Individual> {
 	public int getNumberOfBehaviors(){
 		return numberOfBehaviors;
 	}
-	
-	public String toString(){
-		StringBuilder builder = new StringBuilder();
-		builder.append("Population\n" + "Size: " + size() + "\n");
-		for(Individual solution : this){
-			builder.append("\n" + solution + "\n");
-		}
-		return builder.toString();
-	}
+
 	/*
 	public Population clone()
 	{

@@ -31,19 +31,18 @@ public class Main extends PApplet
 		outputFolders = new File[NUM_EXPERIMENTS];
 		for(int n = 0; n < NUM_EXPERIMENTS;n++)
 		{
-			File folder = new File(dataPath("") + "/out"+n+"/");
+			File folder = new File(dataPath("") + "/OverGenerations15-2/out"+n+"/");
 			outputFolders[n] = folder;
 		}
 		
 		if(!isGenerationOver)
-		{
-			
+		{		
 			//Novelty Search Parameters
-			int populationSize = 30;
-			int numNearestNeighbors = 1; 
+			int populationSize = 20;
+			int numNearestNeighbors = 15; 
 			int numberOfIterations = 20;
-			int tournamentSize = 1;
-			double initialSparsenessThreshold = 0.05;
+			int tournamentSize = 3;
+			double initialSparsenessThreshold = 10;
 			Random rand = new Random(42);
 			generator = new TimeGenerator(this,rand);
 			for(int n = 0; n < NUM_EXPERIMENTS;n++)
@@ -53,20 +52,20 @@ public class Main extends PApplet
 				Population result = search.getPopulation();
 				saveResults(generator, result,outputFolders[n]);
 				//Here goes the code for what should change between experiments
-				//TODO
-				numNearestNeighbors += 2;
+				numberOfIterations += 20;
 				System.out.println("Experiment "+(n + 1)+" Done");
-
 			}
 			isGenerationOver = true;
 		}
-
 	}
 
 	private ArrayList<ArrayList<Alternative>> data;
 	private int currentExperiment = 0;
+	
+	int lastTime= 0 ,time = 0;
 	public void draw()
 	{
+		time += millis()/1000;
 		if(isGenerationOver && isVizPreparationOver != true)
 		{
 			//Get the stored results in setup() into a data collection to prepare for visualization
@@ -86,8 +85,9 @@ public class Main extends PApplet
 			isVizPreparationOver = true;
 			currentExperiment = 0;
 		}
-		if(keyPressed )
+		if(keyPressed && (time - lastTime) > 200)
 		{		
+			lastTime = time;
 			currentExperiment = (currentExperiment+1)%NUM_EXPERIMENTS;
 		}
 		if(isVizPreparationOver)
@@ -100,7 +100,7 @@ public class Main extends PApplet
 			{	
 				alterantives.get(i).draw(this);
 			}
-			text(currentExperiment+"", 50,50);
+			text(currentExperiment+"", 25,25);
 		}
 		
 	}

@@ -1,8 +1,8 @@
 
-import java.util.PriorityQueue;
-import java.util.Random;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.PriorityQueue;
 
 public class NoveltySearch
 {
@@ -35,6 +35,9 @@ public class NoveltySearch
 		this.tournamentSize = tournamentSize;
 		this.numberOfIterations = numberOfIterations;
 	}
+	/**
+	 * Sorts Individuals from largest to smallest based on novelty
+	 */
 	Comparator<Individual> noveltyCompratator = new Comparator<Individual>() {
 
 		@Override
@@ -44,12 +47,18 @@ public class NoveltySearch
 	};
 	public void run()
 	{
-		for (int i = 0 ; i < numberOfIterations; i++) 
+		for (int i = 1 ; i <= numberOfIterations; i++) 
 		{
-			this.iterate();
+			this.iterate(i,numberOfIterations);
 		}
 	}
-	private void iterate() {
+	
+	int addMax = 30;
+	int addMin = 10;
+	int numLastGeneration = 2;
+	int[] last = new int[numLastGeneration];
+	int index = 0;
+ 	private void iterate(int iterationNum, int maxIterations) {
 		//		
 		/* TODO For Future: Adaptive change on novelty threshold
 			An adaptive threshold ρmin is used to determine which
@@ -68,17 +77,62 @@ public class NoveltySearch
 		 Population populationAndArchive = (Population) population.clone();
 		 populationAndArchive.addAll(archive);
 
+		int numAdded = 0;
 		// determine novelty
 		for (Individual solution : population) {
 			solution.setNovelty(Double.POSITIVE_INFINITY);
 			computeNovelty(solution, populationAndArchive, numNearestNeighbors);
-			//Scheme 1, add to archive if > threshold, threshold changes dynamicly
-			if (solution.getNovelty() >= sparsenessThreshold) {
-				archive.add(solution);
-			}
 			
+			//Scheme 1, add to archive if > threshold, threshold changes dynamicly
+			/*
+			if (solution.getNovelty() >= sparsenessThreshold)
+			{
+				//System.out.println(solution.getNovelty());
+				archive.add(solution);
+				numAdded++;
+			}		
+			*/	
 		}
-
+		
+		/*
+		//Updating the novelty threshold Scheme 1
+		last[index] = numAdded;
+		index = (index+1)%last.length;
+		if(sum(last) > addMax)
+			sparsenessThreshold += 5;
+		if(sum(last) < addMin)
+		{
+			sparsenessThreshold = sparsenessThreshold - 5;
+			if(sparsenessThreshold < 0)
+				sparsenessThreshold = 0.1;
+		}
+		System.out.println(numAdded + " -> " + archive.size() + " :: " +sparsenessThreshold + " "+Arrays.toString(last));
+		*/
+		//Scheme 2 Adding the n most novel every iteration to the archive
+		population.sort(noveltyCompratator);
+		for(int i = 0 ; i < 10;i++)
+		{
+			archive.add(population.get(i));
+		}
+		//Evolutionary Strategy (ES): 
+		//ES takes the worst percentReplaced of population and replaces them with mutated versions of the remaining best
+		
+		
+		
+		if(iterationNum < maxIterations) //To preserve the last population from mutation
+		{
+			float percentReplaced = 0.5f;
+			int lambda = (int)(population.size() * percentReplaced);//num of replaced
+			for (int i = 0; i < lambda; i++)
+			{ 
+				//Individual toBeMutated = population.get(i); //Get best from front (array sorted by largest to smallest)
+				//toBeMutated.mutate(0.25, 0.05,gen);
+				population.set((i + lambda) % population.size(),new Individual(gen)); 
+			}
+		}
+		
+		
+		/* Mutation based on tournamen selection
 		// select parents
 		Population children = new Population(gen,0);
 		while (children.size() < population.size()) {
@@ -91,8 +145,17 @@ public class NoveltySearch
 
 		population.clear();
 		population.addAll(children);
+		*/
+		
 	}
-
+	private int sum(int[] arr) {
+		int sum  = 0;
+		for (int i = 0; i < arr.length; i++) 
+		{
+			sum		+= arr[i];
+		}
+		return sum;
+	}
 	public void computeNoveltyCheck(Individual solution, Population comparisonGroup, int k) {
 		double leastDistSq = Double.POSITIVE_INFINITY;
 		for (Individual otherSolution : comparisonGroup) {
@@ -123,10 +186,9 @@ public class NoveltySearch
 
 		for (Individual otherSolution : comparisonGroup)
 		{
-			if (!solution.equals(otherSolution)) {
-
+			if (!solution.equals(otherSolution)) 
+			{			
 				nonSelfCount++;
-
 				double distSq = -1 * solution.distanceSquared(otherSolution);
 				int queueSizeBeforeAdd = leastDistances.size();
 				if (queueSizeBeforeAdd < k || distSq > leastDistances.peek()) {
