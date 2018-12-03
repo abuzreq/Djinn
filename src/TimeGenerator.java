@@ -18,11 +18,20 @@ import Jama.Matrix;
 import processing.core.PApplet;
 import processing.core.PImage;
 
+
+/**
+ * The code was integrated from my submission to project 1.
+ * It implements the abstract class Generator 
+ * @author Ahmed Abuzuraiq
+ *
+ */
 public class TimeGenerator extends Generator {
 
 	private Color[][][] data;
 	private int[][] mask;
 	private int WIDTH = 344, HEIGHT = 359, NUM_FRAMES = 78;
+	//The ranges of the genes: good values [0.1 - 0.5] , [0.0 - 0.04]
+	static float var1Low = 0.0f ,var1High = 0.5f,var2Low = 0.0f,var2High = 0.2f;
 
 	TimeGenerator(PApplet ap, Random rand) {
 		super(ap, rand);
@@ -54,19 +63,17 @@ public class TimeGenerator extends Generator {
 	}
 
 	@Override
-	public double[] getBehaviour(Gene[] variables) {
+	public double[] getBehaviour(Gene[] variables) 
+	{
 		double falloff = variables[0].getValue();
 		double increment = variables[1].getValue();
 		PImage alterantive = genotypeToPhenotype(falloff, increment);
-		// alterantive.filter(GRAY);
-		// return copyFromIntArray(alterantive.pixels);
-
 		return features(alterantive);
 	}
 
 	@Override
 	public Gene[] generateGenotype() {
-		return new Gene[] { new Gene(rand, 0.1, 0.5), new Gene(rand, 0, 0.04) };
+		return new Gene[] { new Gene(rand, var1Low, var1High), new Gene(rand, var2Low, var2High) };
 	}
 
 	@Override
@@ -100,11 +107,9 @@ public class TimeGenerator extends Generator {
 		}
 		PImage img = ap.createImage(WIDTH, HEIGHT, ap.GRAY);
 		img.loadPixels();
-		// println(img.pixels.length);
 		for (int i = 0; i < WIDTH; i++) {
 			for (int j = 0; j < HEIGHT; j++) {
 				img.set(i, j, colorToInt(arr[i][j]));
-				// img.pixels[j*WIDTH+i] = arr[i][j];
 			}
 		}
 		img.updatePixels();
@@ -112,24 +117,18 @@ public class TimeGenerator extends Generator {
 	}
 
 	private Size _winSize = new Size(64, 128);
-	private Size _blockSize = new Size(16, 16);
-	private Size _blockStride = new Size(8, 8);
+	private Size _blockSize = new Size(32, 32);
+	private Size _blockStride = new Size(16, 16);
 	private Size _cellSize = new Size(8, 8);
 	private HOGDescriptor hog = new HOGDescriptor(_winSize, _blockSize, _blockStride, _cellSize, 9);
 
-	private double[] features(PImage img) {
+	private double[] features(PImage img)
+{
 		MatOfFloat descriptors = new MatOfFloat();
-
-		/*
-		 * Mat mat = new Mat(img.width,img.height, CvType.CV_8SC3); mat.put(0,
-		 * 0, img.pixels);
-		 */
 		Mat mat = toMat(img);
 		Imgproc.cvtColor(mat, mat, Imgproc.COLOR_RGB2GRAY);
-
 		Imgproc.resize(mat, mat, new Size(64, 128));
 		hog.compute(mat, descriptors);
-		// System.out.println(descriptors.height() + " * "+descriptors.width());
 		return copyFromFloatArray(descriptors.toArray());
 	}
 

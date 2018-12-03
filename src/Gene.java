@@ -41,7 +41,6 @@ public class Gene
 	public void update(double del) 
 	{
 		this.value += del;
-		
 	}
 	public double getHigh() {
 		return high;

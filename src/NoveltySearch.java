@@ -59,22 +59,7 @@ public class NoveltySearch
 	int[] last = new int[numLastGeneration];
 	int index = 0;
  	private void iterate(int iterationNum, int maxIterations) {
-		//		
-		/* TODO For Future: Adaptive change on novelty threshold
-			An adaptive threshold ρmin is used to determine which
-			behaviors to include in the archive. If the novelty of a new
-			individual is higher than the threshold (ρ(x) > ρmin), it
-			is added to the archive. To keep the size of the archive approximately
-			constant, ρmin is increased by a fixed fraction if
-			the number of added behaviors exceeds the addmax threshold
-			in a certain number of evaluations. If the number of
-			added behaviors is lower than addmin in a certain number
-			of evaluations, ρmin is decreased by a fixed fraction
-			Source: Critical Factors in the Performance of Novelty Search, 
-			by Steijn Kistemaker and Shimon Whiteson
-		 */
-		
-		 Population populationAndArchive = (Population) population.clone();
+ 		Population populationAndArchive = (Population) population.clone();
 		 populationAndArchive.addAll(archive);
 
 		int numAdded = 0;
@@ -83,7 +68,7 @@ public class NoveltySearch
 			solution.setNovelty(Double.POSITIVE_INFINITY);
 			computeNovelty(solution, populationAndArchive, numNearestNeighbors);
 			
-			//Scheme 1, add to archive if > threshold, threshold changes dynamicly
+			//Scheme 1, add to archive if > threshold, threshold changes dynamically
 			/*
 			if (solution.getNovelty() >= sparsenessThreshold)
 			{
@@ -93,9 +78,23 @@ public class NoveltySearch
 			}		
 			*/	
 		}
-		
-		/*
+		/* Adaptive change on novelty threshold
+		An adaptive threshold ρmin is used to determine which
+		behaviors to include in the archive. If the novelty of a new
+		individual is higher than the threshold (ρ(x) > ρmin), it
+		is added to the archive. To keep the size of the archive approximately
+		constant, ρmin is increased by a fixed fraction if
+		the number of added behaviors exceeds the addmax threshold
+		in a certain number of evaluations. If the number of
+		added behaviors is lower than addmin in a certain number
+		of evaluations, ρmin is decreased by a fixed fraction
+		Source: Critical Factors in the Performance of Novelty Search, 
+		by Steijn Kistemaker and Shimon Whiteson
+		 
+		Implemented below but abandoned for scheme 2 (for simplicity)
+		*/
 		//Updating the novelty threshold Scheme 1
+		/* 		
 		last[index] = numAdded;
 		index = (index+1)%last.length;
 		if(sum(last) > addMax)
@@ -106,33 +105,33 @@ public class NoveltySearch
 			if(sparsenessThreshold < 0)
 				sparsenessThreshold = 0.1;
 		}
-		System.out.println(numAdded + " -> " + archive.size() + " :: " +sparsenessThreshold + " "+Arrays.toString(last));
 		*/
-		//Scheme 2 Adding the n most novel every iteration to the archive
+		
+		//Scheme 2 Adding the n=10 most novel every iteration to the archive
 		population.sort(noveltyCompratator);
 		for(int i = 0 ; i < 10;i++)
 		{
 			archive.add(population.get(i));
 		}
+		
 		//Evolutionary Strategy (ES): 
 		//ES takes the worst percentReplaced of population and replaces them with mutated versions of the remaining best
-		
-		
-		
+		//Implemented from the pseudocode given in the PCG Book Chapter 2 by Noor Shaker et al.				
 		if(iterationNum < maxIterations) //To preserve the last population from mutation
 		{
-			float percentReplaced = 0.5f;
+			float percentReplaced = 0.25f;
 			int lambda = (int)(population.size() * percentReplaced);//num of replaced
 			for (int i = 0; i < lambda; i++)
 			{ 
-				//Individual toBeMutated = population.get(i); //Get best from front (array sorted by largest to smallest)
+				//Individual toBeMutated = population.get(i); 
 				//toBeMutated.mutate(0.25, 0.05,gen);
+				
 				population.set((i + lambda) % population.size(),new Individual(gen)); 
 			}
 		}
 		
 		
-		/* Mutation based on tournamen selection
+		/* Mutation based on tournament selection (the original implementation)
 		// select parents
 		Population children = new Population(gen,0);
 		while (children.size() < population.size()) {
@@ -142,7 +141,6 @@ public class NoveltySearch
 			child.mutate(.25,0.1,gen); // TODO: Fix mutation rate
 			children.add(child);
 		}
-
 		population.clear();
 		population.addAll(children);
 		*/
