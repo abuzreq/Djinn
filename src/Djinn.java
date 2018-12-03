@@ -12,6 +12,8 @@ import processing.core.PVector;
 
 /** READ ME
 
+Author: Ahmed Abu Zuraiq
+
 Toggle isGenerationOver to false if you want the novelty search to run,
 if you only want to visualize the results of a previous run, 
 then change @targetFolder to the folder that contains the results.
