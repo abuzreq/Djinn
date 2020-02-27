@@ -4,7 +4,7 @@ An experiment on exploring the generative space of a visual arts generator using
 ## Generative Art
 ![Noisy GIF](https://github.com/abuzreq/Djinn/blob/master/time.gif)
 
-Inspired by a [https://gfycat.com/concerneddecisivecockatoo](gif of an aging woman), I wanted to find a way to juxtapose the images from different ages together. In Noisy GIF, I stack the gif's frames as a 3D matrix (movie?) then sample accross the matrix using a greyscale 2D Perlin Noise image. This was favoured over using an RNG because Perlin noise created contigious chunks of light/dark regions which made it possible to have just enough of each age. Moving the mouse around directly manipulates two parameters of the Perlin noise.
+Inspired by a [https://gfycat.com/concerneddecisivecockatoo](gif of an aging woman), I wanted to find a way to juxtapose the images from different ages together. In GIF (or Generative Interwoven Faces), I stack the gif's frames as a 3D matrix (movie?) then sample accross the matrix using a greyscale 2D Perlin Noise image. This was favoured over using an RNG because Perlin noise created contigious chunks of light/dark regions which made it possible to have just enough of each age. Moving the mouse around directly manipulates two parameters of the Perlin noise.
 
 ## Searching for what is 'interesting'
 ![Noisy GIF](https://github.com/abuzreq/Djinn/blob/master/djinn.gif)
