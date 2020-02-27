@@ -11,7 +11,6 @@ Inspired by a [https://gfycat.com/concerneddecisivecockatoo](gif of an aging wom
 
 When looking at the Noisy GIF project above, you can explore its generative space by moving the mouse around looking for something 'interesting'. I was interested in automating/semi-automating this process. An optimization algorithm fails in this case because it is hard to quantify interestingness. Djinn aims at supporting the process of exploring the space of a visual art generator by sampling it through Novelty Search. The purpose is to find as many distinct/novel points in that space as possible. This is done by comparing any newly generated piece against others based on their visual features (I am using Histogram of Oriented Gradients (HOG)).
 
-
 ## Setup:
 1) Open Eclipse IDE
 2) Create a project named Djinn
